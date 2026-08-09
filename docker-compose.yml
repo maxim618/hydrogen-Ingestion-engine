@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # 1. Брокер сообщений MQTT (Принимает данные от датчиков водородной станции)
+  mosquitto:
+    image: eclipse-mosquitto:2.0.18
+    container_name: hydrogen-mqtt-broker
+    ports:
+      - "1883:1883"   # Стандартный порт для MQTT
+      - "9001:9001"   # Порт для WebSockets (если понадобится фронтенд)
+    volumes:
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    # Разрешаем анонимные подключения для упрощения локальной разработки
+    command: mosquitto -c /mosquitto-no-auth.conf
+    restart: unless-stopped
+
+  # 2. База данных временных рядов (Сохраняет терабайты телеметрии)
+  influxdb:
+    image: influxdb:2.7.5
+    container_name: hydrogen-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=HydrogenSuperPassword2026
+      - DOCKER_INFLUXDB_INIT_ORG=hydrogen_hub
+      - DOCKER_INFLUXDB_INIT_BUCKET=telemetry_bucket
+      - DOCKER_INFLUXDB_INIT_RETENTION=30d # Хранить данные 30 дней, затем автоочистка
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    restart: unless-stopped
+
+  # 3. Визуализация (Строит графики давления, температуры и КПД)
+  grafana:
+    image: grafana/grafana:10.4.1
+    container_name: hydrogen-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - influxdb
+    restart: unless-stopped
+
+volumes:
+  mosquitto_data:
+  mosquitto_log:
+  influxdb_data:
+  grafana_data:
