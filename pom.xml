@@ -70,6 +70,13 @@
             <artifactId>spring-integration-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- реактивный клиент для Redis/Valkey и выполнения lua-скриптов .-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+        </dependency>
+
     </dependencies>
 
     <!--  управление зависимостями для фиксации версий модулей Spring AI -->
