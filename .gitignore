@@ -23,3 +23,10 @@ tmp/
 .DS_Store
 Thumbs.db
 /.idea/modules.xml
+
+# Секреты и локальные переменные окружения
+.env
+
+# Локальный буфер Circuit Breaker
+/fallback_buffer/
+
