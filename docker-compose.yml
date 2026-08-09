@@ -47,8 +47,25 @@ services:
       - influxdb
     restart: unless-stopped
 
+
+  # 4. высокоскоростной кэш в памяти (защита от спама датчиков + сверхбыстрый Circuit Breaker)
+  valkey:
+    image: valkey/valkey:7.2.5
+    container_name: hydrogen-valkey
+    ports:
+      - "6379:6379"
+    volumes:
+      - valkey_data:/data
+    # чтобы контейнер не грузил ПК при локальной разработке
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    restart: unless-stopped
+
 volumes:
   mosquitto_data:
   mosquitto_log:
   influxdb_data:
   grafana_data:
+  valkey_data:
