@@ -45,17 +45,19 @@
 
 
 ### Доступы к веб-интерфейсам
-* **InfluxDB UI**: `http://localhost:8086`  
-  * *Логин:* `admin`  
-  * *Пароль:* `*********`  
-  * *Организация:* `hydrogen_hub` 
-  * *Бакет:* `telemetry_bucket`
-* **Grafana**: `http://localhost:3000`  
-  * *Логин/Пароль:* `admin` / `*****`
+* **InfluxDB UI**: `http://localhost:8086`
+    * Логин: Значение INFLUXDB_ADMIN_USER из вашего .env
+    * Пароль: Значение INFLUXDB_ADMIN_PASSWORD из вашего .env
+    * Организация: hydrogen_hub
+    * Bucket: telemetry_bucket
+* **Grafana**: `http://localhost:3000`
+    * Логин/Пароль: значения GRAFANA_ADMIN_USER / GRAFANA_ADMIN_PASSWORD - из вашего .env
+
 
 ##  Структура топиков MQTT и формат данных
 
-Движок слушает wildcard-топик `hydrogen/telemetry/+`, куда датчики шлют JSON-телеметрию:
+Движок слушает MQTT-топик с подстановочными знаками (wildcards)  `hydrogen/telemetry/+`, 
+куда датчики шлют JSON-телеметрию:
 
 **Пример сообщения в топик `hydrogen/telemetry/cell_01`:**
 
