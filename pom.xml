@@ -39,6 +39,7 @@
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-mqtt</artifactId>
+            <version>6.4.1</version>
         </dependency>
 
         <!-- официальный реактивный клиент для базы данных временных рядов InfluxDB -->
