@@ -1,7 +1,8 @@
-package com.hydrogen.engine.telemetry;
+package com.hydrogen.engine.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hydrogen.engine.domain.TelemetryRecord;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.reactive.InfluxDBClientReactive;
 import com.influxdb.client.reactive.InfluxDBClientReactiveFactory;
