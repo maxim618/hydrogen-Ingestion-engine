@@ -1,6 +1,8 @@
-package com.hydrogen.engine.telemetry;
+package com.hydrogen.engine.pipeline;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hydrogen.engine.domain.TelemetryRecord;
+import com.hydrogen.engine.repository.HydrogenInfluxRepository;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
