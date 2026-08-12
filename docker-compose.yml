@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8'
 
 services:
   # 1. Брокер сообщений MQTT (Принимает данные от датчиков водородной станции)
@@ -24,10 +24,11 @@ services:
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_ADMIN_USER}
-      - DOCKER_INFLUXDB_INIT_PASSWORD={INFLUXDB_ADMIN_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_ADMIN_PASSWORD}
       - DOCKER_INFLUXDB_INIT_ORG=hydrogen_hub
       - DOCKER_INFLUXDB_INIT_BUCKET=telemetry_bucket
       - DOCKER_INFLUXDB_INIT_RETENTION=30d # Хранить данные 30 дней, затем автоочистка
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_TOKEN}
     volumes:
       - influxdb_data:/var/lib/influxdb2
     restart: unless-stopped
