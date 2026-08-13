@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import reactor.core.Disposable;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
@@ -55,6 +56,10 @@ public class HydrogenInfluxRepository {
         this.redisTemplate = redisTemplate;
     }
 
+    // Переменная для управления симуляцией сбоев в тестах
+    private boolean simulateFailure = false;
+
+
     @PostConstruct
     public void init() {
         this.influxClient = InfluxDBClientReactiveFactory.create(influxUrl, token.toCharArray(), org, bucket);
@@ -69,7 +74,7 @@ public class HydrogenInfluxRepository {
                         new Consumer<List<TelemetryRecord>>() {
                             @Override
                             public void accept(List<TelemetryRecord> records) {
-                                HydrogenInfluxRepository.this.flushBatchToInflux(records);
+                                flushBatchToInflux(records);
                             }
                         },
                         new Consumer<Throwable>() {
@@ -87,31 +92,28 @@ public class HydrogenInfluxRepository {
     public void save(TelemetryRecord record) {
         bufferSink.tryEmitNext(record);
     }
+
+
     /**
      * основной метод записи пакета в InfluxDB с логикой Circuit Breaker
+     * модифицируем метод отправки пачки, чтобы он учитывал симуляцию аварии
+     *
      */
-
-    private void flushBatchToInflux(List<TelemetryRecord> records) {
+    public void flushBatchToInflux(List<TelemetryRecord> records) {
         if (records.isEmpty()) return;
+
+        if (simulateFailure) {
+            sendToValkeyFallback(records);
+            return;
+        }
 
         List<Point> points = mapToPoints(records);
 
-        // работает реактивно через Flux.fromIterable
-        Mono.from(writeApi.writePoints(bucket, org, WritePrecision.MS,
-                        reactor.core.publisher.Flux.fromIterable(points)))
-                .doOnSuccess(new Consumer<WriteReactiveApi.Success>() {
-                    @Override
-                    public void accept(WriteReactiveApi.Success v) {
-                        System.out.println(" Успешно записан пакет из " + records.size() + " точек в InfluxDB.");
-                    }
-                })
-                .doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable error) {
-                        System.err.println("Ошибка InfluxDB! Активация буфера Valkey (Circuit Breaker): " + error.getMessage());
-                        // В случае аварии БД - отправляем пачку на хранение в Valkey
-                        sendToValkeyFallback(records);
-                    }
+        Mono.from(writeApi.writePoints(bucket, org, WritePrecision.MS, Flux.fromIterable(points)))
+                .doOnSuccess(v -> System.out.println(" Успешно записан пакет из " + records.size() + " точек в InfluxDB."))
+                .doOnError(error -> {
+                    System.err.println(" Ошибка InfluxDB! Активация буфера Valkey (Circuit Breaker): " + error.getMessage());
+                    sendToValkeyFallback(records);
                 })
                 .subscribe();
     }
@@ -139,6 +141,8 @@ public class HydrogenInfluxRepository {
      */
     @Scheduled(fixedDelay = 5000)
     public void tryRecovery() {
+
+
         // если процесс восстановления уже идет, или в Valkey пусто - выходим
         Long queueSize = redisTemplate.opsForList().size(FALLBACK_KEY);
         if (queueSize == null || queueSize == 0 || !isRecovering.compareAndSet(false, true)) {
@@ -199,6 +203,20 @@ public class HydrogenInfluxRepository {
                                     }
         ).toList();
     }
+
+    /**
+     * Технологический метод для сброса состояния Circuit Breaker в интеграционных тестах.
+     */
+    public void resetRecoveryStateForTest() {
+        this.isRecovering.set(false);
+        this.simulateFailure = false;
+    }
+
+    public void setSimulateFailure(boolean simulateFailure) {
+        this.simulateFailure = simulateFailure;
+    }
+
+
 
     @PreDestroy
     public void close() {
