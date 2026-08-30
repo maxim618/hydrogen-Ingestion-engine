@@ -1,4 +1,4 @@
-[![CI](https://github.com/maxim618/hydrogen-Ingestion-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/maxim618/hydrogen-Ingestion-engine/actions/workflows/ci.yml) [![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](https://www.oracle.com/java/) [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot) [![Spring AI](https://img.shields.io/badge/Spring%20AI-2.0.0-6DB33F?logo=spring&logoColor=white)](https://spring.io/projects/spring-ai) [![Mosquitto](https://img.shields.io/badge/Mosquitto-2.0.18-660066?logo=eclipsemosquitto&logoColor=white)](https://mosquitto.org/) [![InfluxDB](https://img.shields.io/badge/InfluxDB-2.7.5-22ADF6?logo=influxdb&logoColor=white)](https://www.influxdata.com/) [![Valkey](https://img.shields.io/badge/Valkey-7.2.5-DC382D?logo=redis&logoColor=white)](https://valkey.io/)
+[![CI](https://github.com/maxim618/hydrogen-Ingestion-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/maxim618/hydrogen-Ingestion-engine/actions/workflows/ci.yml) [![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](https://www.oracle.com/java/) [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot) [![Spring AI](https://img.shields.io/badge/Spring%20AI-2.0.0-6DB33F?logo=spring&logoColor=white)](https://spring.io/projects/spring-ai) [![MQTT](https://img.shields.io/badge/MQTT-Protocol-660066?logo=mqtt&logoColor=white)](https://mqtt.org/) [![InfluxDB](https://img.shields.io/badge/InfluxDB-2.x-22ADF6?logo=influxdb&logoColor=white)](https://www.influxdata.com/) [![Valkey](https://img.shields.io/badge/Valkey-7.x-DC382D?logo=redis&logoColor=white)](https://valkey.io/) [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
 # Hydrogen Ingestion Engine (H2-IE)
 Высоконагруженный реактивный движок (Data Ingestion Engine) на Java 21 для сбора, валидации и пакетного сохранения 
@@ -14,7 +14,7 @@
         [MQTT Broker] (Eclipse Mosquitto)
                 │
                 ▼
-        [Java Ingestion Engine] (Spring Boot 3.x + Virtual Threads)
+        [Java Ingestion Engine] (Spring Boot 4.1.0 + Virtual Threads)
                  ├── 1. Fast-Fail Validator (отсечение невалидных данных на лету)
                  ├── 2. Reactive In-Memory Buffer (накопление пакетов данных)
                  └── 3. Circuit Breaker (защита при отказе БД)
@@ -38,9 +38,10 @@
 
 ##  Технологический стек
 * Java 21
-* Spring Boot 3.x (Spring Integration MQTT, Spring WebFlux)
+* Spring Boot 4.1.0 (Spring Integration MQTT, Spring WebFlux)
 * Протокол MQTT (Eclipse Paho Client)
 * Базы данных InfluxDB 2.x (Time-Series DB)
+* Valkey 7.x
 * Docker, Grafana
 
 
